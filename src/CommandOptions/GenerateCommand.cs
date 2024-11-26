@@ -1,3 +1,4 @@
+using Spectre.Console;
 using Spectre.Console.Cli;
 
 
@@ -5,7 +6,6 @@ namespace Altium.Generator.CommandOptions
 {
     public class GenerateCommand : Command<GenerateCommandOptions>
     {
-        /// <inheritdoc />
         public override int Execute(CommandContext context, GenerateCommandOptions settings)
         {
             try
@@ -19,14 +19,13 @@ namespace Altium.Generator.CommandOptions
 
                 var random = new RandomnessGenerator(avaliableWords);
 
-                using (var writer = new FileWriter(settings.OutputPath))
-                {
+                using var writer = new FileWriter(settings.OutputPath);
 
-                    while (writer.BytesWritten < settings.Size)
-                    {
-                        writer.Write(random.GenerateRow());
-                    }
+                while (writer.BytesWritten < settings.Size)
+                {
+                    writer.Write(random.GenerateRow());                    
                 }
+
 
             }
             catch (FileNotFoundException)

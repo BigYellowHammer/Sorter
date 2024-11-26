@@ -21,7 +21,7 @@ namespace Altium.Generator
         {
             this.path = path;
             bytesWritten = 0;
-            writer = new StreamWriter(path, true);
+            writer = new StreamWriter(path, false);
         }
 
         public void Write(string text)
@@ -29,7 +29,7 @@ namespace Altium.Generator
             try
             {
                 writer.WriteLine(text);
-                bytesWritten += (ulong)text.Length;
+                bytesWritten += (ulong)System.Text.Encoding.UTF8.GetBytes(text).Length;
 
             }
             catch (Exception ex)

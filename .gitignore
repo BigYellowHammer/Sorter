@@ -19,3 +19,6 @@ bld/
 [Ll]og/
 
 .vscode/*
+.vs/
+coverage-report/
+TestResults/

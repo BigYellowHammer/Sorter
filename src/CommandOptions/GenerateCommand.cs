@@ -6,43 +6,73 @@ namespace Altium.Generator.CommandOptions
 {
     public class GenerateCommand : Command<GenerateCommandOptions>
     {
+        private IFileHandler _fileHandler;
+        private IRandomnessGenerator _randomnessGenerator; 
+
+        public GenerateCommand(IFileHandler fileHandler, IRandomnessGenerator randomnessGenerator) 
+        { 
+            _fileHandler = fileHandler;
+            _randomnessGenerator = randomnessGenerator;
+        }
+        
         public override int Execute(CommandContext context, GenerateCommandOptions settings)
         {
             try
             {
-                List<string> avaliableWords = new List<string>();
-                if (!string.IsNullOrEmpty(settings.InputPath))
+                var avaliableWords = GetAvaliableWords(settings.InputPath);
+
+				_randomnessGenerator.Configure(avaliableWords);
+
+                _fileHandler.Configure(settings.OutputPath);
+
+				AnsiConsole.MarkupLine($"[lime]Generation started[/]");
+
+				while (_fileHandler.BytesWritten < settings.Size)
                 {
-                    string fileContent = File.ReadAllText(settings.InputPath);
-                    avaliableWords = fileContent.Split([' ', '\t', '\r', '\n', ',', '.', ';', '!', '?'], StringSplitOptions.RemoveEmptyEntries).ToList();
-                }
+					_fileHandler.Write(_randomnessGenerator.GenerateRow());
+                    
+                    if(settings.ShowProgress.HasValue && settings.ShowProgress.Value)
+					    Task.Run(() => Console.Write($"\r Progress:   {(double)_fileHandler.BytesWritten / settings.Size:P}"));
+				}
 
-                var random = new RandomnessGenerator(avaliableWords);
+				AnsiConsole.MarkupLine($"[olive]{_fileHandler.BytesWritten} bytes written[/]");
+				AnsiConsole.MarkupLine($"[olive]{_fileHandler.FullPath} created[/]");
 
-                using var writer = new FileWriter(settings.OutputPath);
-
-                while (writer.BytesWritten < settings.Size)
-                {
-                    writer.Write(random.GenerateRow());                    
-                }
-
-
-            }
+			}
             catch (FileNotFoundException)
             {
                 Console.WriteLine("Specified file was not found.");
+                return -3;
             }
             catch (UnauthorizedAccessException)
             {
                 Console.WriteLine("Access to the file is denied.");
+                return -2;
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error: {e.Message}");
                 return -1;
             }
+            finally
+            {
+                _fileHandler.Dispose();
+			}
 
             return 0;
         }
+
+        private List<string> GetAvaliableWords(string inputPath)
+        {
+			List<string> avaliableWords = [];
+			if (!string.IsNullOrEmpty(inputPath))
+			{
+				string fileContent = _fileHandler.ReadAllText(inputPath);
+				avaliableWords = fileContent.Split([' ', '\t', '\r', '\n', ',', '.', ';', '!', '?'], StringSplitOptions.RemoveEmptyEntries).ToList();
+                AnsiConsole.MarkupLine($"[lime]Words from {Path.GetFullPath(inputPath)} loaded[/]");
+            }
+
+            return avaliableWords;
+		}
     }
 }

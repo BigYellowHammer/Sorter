@@ -18,5 +18,10 @@ namespace Altium.Generator.CommandOptions
         [CommandOption("-o|--output")]
         [DefaultValue("output.txt")]
         public string OutputPath { get; set; }
-    }
+
+		[CommandOption("--progress")]
+		[Description("Shows generation progress -> not recommended for large generations as its slows down execution")]
+		public bool? ShowProgress { get; set; }
+
+	}
 }

@@ -2,8 +2,8 @@
 
 ## TODO
 
-- [ ] Tests
-- [ ] Unit/Coverage pipeline
-- [ ] Progress bar
-- [ ] Sample words
+- [x] Tests
+- [x] Unit/Coverage pipeline
+- [x] Progress bar
+- [x] Sample words
 - [ ] Sorting

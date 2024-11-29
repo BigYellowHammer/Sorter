@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 
 namespace Altium.Generator.CommandOptions
 {
-    public class GenerateCommand : Command<GenerateCommandOptions>
+    internal class GenerateCommand : Command<GenerateCommandOptions>
     {
         private IFileHandler _fileHandler;
         private IRandomnessGenerator _randomnessGenerator; 

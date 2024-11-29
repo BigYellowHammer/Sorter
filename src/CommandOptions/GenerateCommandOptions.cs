@@ -4,7 +4,7 @@ using Spectre.Console.Cli;
 namespace Altium.Generator.CommandOptions
 {
     [Description("Generates example file for testing purposes")]
-    public class GenerateCommandOptions : CommandSettings
+    internal class GenerateCommandOptions : CommandSettings
     {
         [Description("Size of the file that should be generated (in bytes)")]
         [CommandArgument(0, "<size>")]

@@ -11,6 +11,9 @@ namespace Altium.Generator
 		private string fullPath;
 
 		private StreamWriter writer;
+		private Dictionary<string, StreamWriter> chunks;
+
+		private const string TEMP_DIRECTORY = "temp";
 
 		public ulong BytesWritten
 		{
@@ -28,12 +31,64 @@ namespace Altium.Generator
 			}
 		}
 
+		public string[] ChunkNames
+		{
+			get
+			{
+				return chunks.Keys.ToArray();
+			}
+		}
+
 		public void Configure(string path)
 		{
 			this.path = path;
 			this.fullPath = Path.GetFullPath(path);
 			bytesWritten = 0;
 			writer = new StreamWriter(path, false);
+			chunks = new Dictionary<string, StreamWriter>();
+
+			Directory.CreateDirectory(TEMP_DIRECTORY);
+		}
+
+		public void SaveLineIntoChunk(string chunkName, string line)
+		{
+			if (chunks.ContainsKey(chunkName))
+			{
+				chunks[chunkName].WriteLine(line);
+			}
+			else
+			{
+				var sw = new StreamWriter($"{TEMP_DIRECTORY}/{chunkName}.txt", false);
+				sw.WriteLine(line);
+				chunks[chunkName] = sw;
+			}
+		}
+
+		public void CloseAllChunks()
+		{
+			foreach (var chunk in chunks.Keys)
+			{
+				chunks[chunk].Close();
+			}
+		}
+
+		public string[] ReadChunkLines(string chunkName)
+		{
+			return File.ReadAllLines($"{TEMP_DIRECTORY}/{chunkName}.txt");
+		}
+
+		public void SaveLinesIntoChunk(string chunkName, string[] sortedLines)
+		{
+			File.WriteAllLines($"{TEMP_DIRECTORY}/{chunkName}.txt", sortedLines);
+		}
+
+
+		public void WriteLines(string[] lines)
+		{
+			foreach (var line in lines)
+			{
+				writer.WriteLine(line);
+			}
 		}
 
 		public void Write(string text)
@@ -41,7 +96,7 @@ namespace Altium.Generator
 			try
 			{
 				writer.WriteLine(text);
-				bytesWritten += (ulong)System.Text.Encoding.UTF8.GetBytes(text).Length;
+				bytesWritten += (ulong)Encoding.UTF8.GetBytes(text).Length;
 
 			}
 			catch (Exception ex)
@@ -56,9 +111,28 @@ namespace Altium.Generator
 			return File.ReadAllText(inputPath);
 		}
 
+		public IEnumerable<string> ReadLines(string inputPath)
+		{
+			return File.ReadLines(inputPath);
+		}
+
 		public void Dispose()
 		{
 			writer.Dispose();
+			foreach (var key in chunks.Keys)
+			{
+				chunks[key].Dispose();
+			}
+
+			if (Directory.Exists(TEMP_DIRECTORY))
+			{
+				DirectoryInfo di = new DirectoryInfo(TEMP_DIRECTORY);
+
+				foreach (FileInfo file in di.GetFiles())
+				{
+					file.Delete();
+				}
+			}
 		}
 	}
 }

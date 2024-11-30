@@ -29,19 +29,6 @@ namespace Altium.Generator
 				{
 					"generate",
 					"1024",
-					"-i ../samples/words.txt"
-				})
-				.WithExample(new[]
-				{
-					"generate",
-					"1024",
-					"-i ../samples/words.txt",
-					"-o customOutputFile.txt"
-				})
-				.WithExample(new[]
-				{
-					"generate",
-					"1024",
 					"-i ../samples/words.txt",
 					"-o customOutputFile.txt",
 					"--progress"
@@ -54,12 +41,6 @@ namespace Altium.Generator
 				{
 					"sort",
 					"output.txt"
-				})
-				.WithExample(new[]
-				{
-					"sort",
-					"output.txt",
-					"-o sorted.txt"
 				})
 				.WithExample(new[]
 				{

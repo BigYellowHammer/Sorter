@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace Altium.Generator.CommandOptions
+namespace Altium.GenSort.CommandOptions
 {
     [Description("Generates example file for testing purposes")]
     internal class GenerateCommandOptions : CommandSettings
@@ -17,9 +17,9 @@ namespace Altium.Generator.CommandOptions
         [Description("Output file")]
         [CommandOption("-o|--output")]
         [DefaultValue("output.txt")]
-        public string OutputPath { get; set; }
+        public string OutputPath { get; set; } = null!;
 
-		[CommandOption("--progress")]
+        [CommandOption("--progress")]
 		[Description("Shows generation progress -> not recommended for large generations as its slows down execution")]
 		public bool? ShowProgress { get; set; }
 

@@ -1,11 +1,12 @@
-﻿using Altium.Generator.CommandOptions;
+﻿using Altium.GenSort.CommandOptions;
+using Altium.GenSort.Infrastructure;
+using Altium.GenSort.Random;
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 using Spectre.Console;
-using Microsoft.Extensions.DependencyInjection;
-using GenSort.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Altium.Generator
+namespace Altium.GenSort
 {
 	[ExcludeFromCodeCoverage]
 	public static class Program
@@ -51,7 +52,8 @@ namespace Altium.Generator
 				})
 				.WithDescription("Sort file provided in input"));
 
-
+			AnsiConsole.MarkupLine($"[grey]Execution started: {DateTime.Now}[/]");
+			
 			var exitCode = await app.RunAsync(args);
 
 			AnsiConsole.MarkupLine($"[lime]Execution time {(DateTime.UtcNow - startTime).TotalSeconds:N}s[/]");

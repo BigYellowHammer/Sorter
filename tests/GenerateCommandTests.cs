@@ -1,10 +1,11 @@
-using Altium.Generator;
-using Altium.Generator.CommandOptions;
+using Altium.GenSort;
+using Altium.GenSort.CommandOptions;
 using NSubstitute;
 using System.Text.RegularExpressions;
+using Altium.GenSort.Random;
 using Spectre.Console.Cli;
 
-namespace tests;
+namespace Altium.GenSort.Tests;
 
 public class GenerateCommandTests
 {

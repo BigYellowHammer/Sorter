@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
+using System.Diagnostics.CodeAnalysis;
 
-namespace GenSort.Infrastructure
+namespace Altium.GenSort.Infrastructure
 {
 	[ExcludeFromCodeCoverage]
 	public class TypeRegistrar : ITypeRegistrar

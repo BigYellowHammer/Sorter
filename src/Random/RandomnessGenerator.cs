@@ -1,11 +1,11 @@
 using System.Text;
 
-namespace Altium.Generator.CommandOptions
+namespace Altium.GenSort.Random
 {
 	internal class RandomnessGenerator : IRandomnessGenerator
 	{
 		private List<string> _avaliableWords = new List<string>();
-		private readonly Random _random = new();
+		private readonly System.Random _random = new();
 		private const string _chars = "abcdefghijklmnopqrstuvwxyz";
 
 		public void Configure(List<string> words)

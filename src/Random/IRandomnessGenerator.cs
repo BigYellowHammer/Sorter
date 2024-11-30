@@ -1,4 +1,4 @@
-﻿namespace Altium.Generator.CommandOptions
+﻿namespace Altium.GenSort.Random
 {
 	public interface IRandomnessGenerator
 	{

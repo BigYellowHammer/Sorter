@@ -1,5 +1,4 @@
-﻿
-namespace Altium.Generator
+﻿namespace Altium.GenSort
 {
 	public interface IFileHandler
 	{

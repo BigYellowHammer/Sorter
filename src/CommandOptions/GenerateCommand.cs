@@ -1,9 +1,10 @@
-using GenSort.Logger;
+using Altium.GenSort.Logger;
+using Altium.GenSort.Random;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 
-namespace Altium.Generator.CommandOptions
+namespace Altium.GenSort.CommandOptions
 {
     internal class GenerateCommand : Command<GenerateCommandOptions>
     {
@@ -20,7 +21,7 @@ namespace Altium.Generator.CommandOptions
         {
             try
             {
-                var avaliableWords = GetAvailableWords(settings.InputPath);
+                var avaliableWords = GetAvailableWords(settings.InputPath!);
 
 				_randomnessGenerator.Configure(avaliableWords);
 

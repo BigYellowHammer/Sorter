@@ -1,16 +1,16 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Altium.Generator
+namespace Altium.GenSort
 {
 	[ExcludeFromCodeCoverage]
 	internal class FileHandler : IDisposable, IFileHandler
 	{
-		private ulong bytesWritten;
-		private string fullPath;
-		private StreamWriter writer;
-		private Dictionary<string, StreamWriter> chunks;
-		private bool _disposed;
+		private ulong bytesWritten = 0;
+		private string fullPath = string.Empty;
+		private StreamWriter writer = default!;
+		private Dictionary<string, StreamWriter> chunks = new Dictionary<string, StreamWriter>();
+		private bool _disposed = false;
 
 		private const string TEMP_DIRECTORY = "temp";
 
@@ -129,11 +129,7 @@ namespace Altium.Generator
 			if (Directory.Exists(TEMP_DIRECTORY))
 			{
 				DirectoryInfo di = new DirectoryInfo(TEMP_DIRECTORY);
-
-				foreach (FileInfo file in di.GetFiles())
-				{
-					file.Delete();
-				}
+				di.Delete(true);
 			}
 
 			_disposed = true;

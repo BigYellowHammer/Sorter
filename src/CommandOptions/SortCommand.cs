@@ -1,11 +1,8 @@
+using Altium.GenSort.Logger;
 using Spectre.Console;
 using Spectre.Console.Cli;
-using System.Text.RegularExpressions;
-using GenSort.Logger;
-using System;
 
-
-namespace Altium.Generator.CommandOptions
+namespace Altium.GenSort.CommandOptions
 {
     internal class SortCommand : Command<SortCommandOptions>
     {
@@ -25,11 +22,11 @@ namespace Altium.Generator.CommandOptions
 
 				using (new PerformanceLogger("Reading input"))
 				{
-					foreach (var line in _fileHandler.ReadLines(settings.InputPath))
+					foreach (var line in _fileHandler.ReadLines(settings.InputPath!))
 					{
 						var parts = line.Split(['.'],  2);
 
-						_fileHandler.SaveLineIntoChunk(parts[1].Substring(1, 2).ToLower(), line);
+						_fileHandler.SaveLineIntoChunk(parts[1].Substring(1, 3).ToLower(), line);
 					}
 					_fileHandler.CloseAllChunks();
 				}

@@ -1,11 +1,11 @@
 using System.Text;
-using Altium.Generator;
-using Altium.Generator.CommandOptions;
+using Altium.GenSort;
+using Altium.GenSort.CommandOptions;
 using NSubstitute;
 using System.Text.RegularExpressions;
 using Spectre.Console.Cli;
 
-namespace tests;
+namespace Altium.GenSort.Tests;
 
 public class SortCommandTests
 {
@@ -18,7 +18,7 @@ public class SortCommandTests
 		var commandContext = new CommandContext(new List<string>(), remainingArguments, "test", new());
 
 		string exampleLine = "1. Test";
-		string chunkName = "te";
+		string chunkName = "tes";
         string[] linesToBeSorted = { "2. Apple", "1. Apple", "2. Banana"};
         string[] sortedLines = { "1. Apple", "2. Apple", "2. Banana" };
 		
@@ -55,7 +55,7 @@ public class SortCommandTests
 	    var commandContext = new CommandContext(new List<string>(), remainingArguments, "test", new());
 
 	    string exampleLine = "1. Test";
-	    string chunkName = "te";
+	    string chunkName = "tes";
 	    string[] linesToBeSorted = { "2. Apple", "1. Apple", "2. Banana" };
 	    string[] sortedLines = { "1. Apple", "2. Apple", "2. Banana" };
 
@@ -83,6 +83,53 @@ public class SortCommandTests
 	    fileHandler.Received().SaveLinesIntoChunk(Arg.Is<string>(x => x == chunkName), Arg.Is<string[]>(x => x.SequenceEqual(sortedLines)));
 	    fileHandler.Received().WriteLines(Arg.Is<string[]>(x => x.SequenceEqual(sortedLines)));
     }
+
+	[Fact]
+    public void Execute_MultipleChunks_CorrectlySorted()
+    {
+
+		//Arrange
+		var remainingArguments = Substitute.For<IRemainingArguments>();
+		var commandContext = new CommandContext(new List<string>(), remainingArguments, "test", new());
+
+		string exampleLine = "1. Foo";
+		string exampleLine2 = "2. Bar";
+		string chunkName = "foo";
+		string chunkName2 = "bar";
+        string[] linesToBeSorted = { "2. Fooa", "1. Fooa", "2. Foob"};
+        string[] sortedLines = { "1. Fooa", "2. Fooa", "2. Foob" };
+		string[] linesToBeSorted2 = { "1. Bara", "2. Bara", "2. Barb"};
+        string[] sortedLines2 = { "1. Bara", "2. Bara", "2. Barb" };
+		
+		var fileHandler = Substitute.For<IFileHandler>();
+
+        fileHandler.ReadLines(Arg.Any<string>()).Returns(new[]{ exampleLine, exampleLine2 });
+        fileHandler.ChunkNames.Returns(new[] { chunkName, chunkName2 });
+        fileHandler.ReadChunkLines(Arg.Is($"{chunkName}")).Returns(linesToBeSorted, sortedLines);
+		fileHandler.ReadChunkLines(Arg.Is($"{chunkName2}")).Returns(linesToBeSorted2, sortedLines2);
+
+		var options = new SortCommandOptions()
+        {
+	        InputPath = "output.txt"
+        };
+
+		var sut = new SortCommand(fileHandler);
+
+        //Act
+        int result = sut.Execute(commandContext, options);
+
+        //Assert
+
+        Assert.Equal(0, result);
+        fileHandler.Received().SaveLineIntoChunk(Arg.Is<string>(x => x == chunkName), Arg.Is<string>(x=> x == exampleLine));
+        fileHandler.Received().SaveLineIntoChunk(Arg.Is<string>(x => x == chunkName2), Arg.Is<string>(x=> x == exampleLine2));
+
+		fileHandler.Received().SaveLinesIntoChunk(Arg.Is<string>(x=> x == chunkName), Arg.Is<string[]>(x => x.SequenceEqual(sortedLines)));
+        fileHandler.Received().SaveLinesIntoChunk(Arg.Is<string>(x=> x == chunkName2), Arg.Is<string[]>(x => x.SequenceEqual(sortedLines2)));
+
+		fileHandler.Received().WriteLines(Arg.Is<string[]>(x=>x.SequenceEqual(sortedLines)));
+		fileHandler.Received().WriteLines(Arg.Is<string[]>(x => x.SequenceEqual(sortedLines2)));
+	}
 
 	[Fact]
 	public void Execute_FileNotFound_NegativeResult()

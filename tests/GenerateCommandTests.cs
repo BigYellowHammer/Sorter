@@ -2,6 +2,7 @@ using Altium.Generator;
 using Altium.Generator.CommandOptions;
 using NSubstitute;
 using System.Text.RegularExpressions;
+using Spectre.Console.Cli;
 
 namespace tests;
 
@@ -11,8 +12,10 @@ public class GenerateCommandTests
     public void Execute_GeneratesValidData_ZeroReturned()
     {
 
-        //Arrange
-        var fileHandler = Substitute.For<IFileHandler>();
+		//Arrange
+		var remainingArguments = Substitute.For<IRemainingArguments>();
+		var commandContext = new CommandContext(new List<string>(), remainingArguments, "test", new());
+		var fileHandler = Substitute.For<IFileHandler>();
 
         fileHandler.BytesWritten.Returns((ulong)0, (ulong)100);
 
@@ -27,7 +30,7 @@ public class GenerateCommandTests
 		var sut = new GenerateCommand(fileHandler, new RandomnessGenerator());
 
         //Act
-        int result = sut.Execute(null, options);
+        int result = sut.Execute(commandContext, options);
 
         //Assert
         var pattern = @"^\d+\.\s[\w\s]+$";
@@ -42,6 +45,9 @@ public class GenerateCommandTests
 	{
 
 		//Arrange
+		var remainingArguments = Substitute.For<IRemainingArguments>();
+		var commandContext = new CommandContext(new List<string>(), remainingArguments, "test", new());
+
 		var fileHandler = Substitute.For<IFileHandler>();
 		fileHandler.ReadAllText(Arg.Any<string>()).Returns("foo");
 		fileHandler.BytesWritten.Returns((ulong)0, (ulong)100);
@@ -57,7 +63,7 @@ public class GenerateCommandTests
 		var sut = new GenerateCommand(fileHandler, new RandomnessGenerator());
 
 		//Act
-		int result = sut.Execute(null, options);
+		int result = sut.Execute(commandContext, options);
 
 		//Assert
 		var pattern = @"^\d+\.\sFoo\s[\w\s]+$";
@@ -72,6 +78,8 @@ public class GenerateCommandTests
 	{
 
 		//Arrange
+		var remainingArguments = Substitute.For<IRemainingArguments>();
+		var commandContext = new CommandContext(new List<string>(), remainingArguments, "test", new());
 		var fileHandler = Substitute.For<IFileHandler>();
 		fileHandler.When(x => x.Configure(Arg.Any<string>())).Throw<FileNotFoundException>();
 
@@ -88,7 +96,7 @@ public class GenerateCommandTests
 		var sut = new GenerateCommand(fileHandler, new RandomnessGenerator());
 
 		//Act
-		int result = sut.Execute(null, options);
+		int result = sut.Execute(commandContext, options);
 
 		//Assert
 		Assert.Equal(-3, result);
@@ -99,6 +107,9 @@ public class GenerateCommandTests
 	{
 
 		//Arrange
+		var remainingArguments = Substitute.For<IRemainingArguments>();
+		var commandContext = new CommandContext(new List<string>(), remainingArguments, "test", new());
+
 		var fileHandler = Substitute.For<IFileHandler>();
 		fileHandler.When(x => x.Configure(Arg.Any<string>())).Throw<UnauthorizedAccessException>();
 
@@ -115,7 +126,7 @@ public class GenerateCommandTests
 		var sut = new GenerateCommand(fileHandler, new RandomnessGenerator());
 
 		//Act
-		int result = sut.Execute(null, options);
+		int result = sut.Execute(commandContext, options);
 
 		//Assert
 		Assert.Equal(-2, result);
@@ -127,6 +138,9 @@ public class GenerateCommandTests
 	{
 
 		//Arrange
+		var remainingArguments = Substitute.For<IRemainingArguments>();
+		var commandContext = new CommandContext(new List<string>(), remainingArguments, "test", new());
+
 		var fileHandler = Substitute.For<IFileHandler>();
 		fileHandler.When(x => x.Configure(Arg.Any<string>())).Throw<Exception>();
 
@@ -143,7 +157,7 @@ public class GenerateCommandTests
 		var sut = new GenerateCommand(fileHandler, new RandomnessGenerator());
 
 		//Act
-		int result = sut.Execute(null, options);
+		int result = sut.Execute(commandContext, options);
 
 		//Assert
 		Assert.Equal(-1, result);

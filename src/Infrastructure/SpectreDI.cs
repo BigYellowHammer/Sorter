@@ -43,9 +43,11 @@ namespace GenSort.Infrastructure
 			_provider = provider;
 		}
 
-		public object Resolve(Type type)
+		public object? Resolve(Type? type)
 		{
-			return _provider.GetService(type);
+			if (type != null) return _provider.GetService(type);
+
+			throw new TypeLoadException();
 		}
 	}
 

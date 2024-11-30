@@ -6,12 +6,11 @@ namespace Altium.Generator
 	[ExcludeFromCodeCoverage]
 	internal class FileHandler : IDisposable, IFileHandler
 	{
-		private string path;
 		private ulong bytesWritten;
 		private string fullPath;
-
 		private StreamWriter writer;
 		private Dictionary<string, StreamWriter> chunks;
+		private bool _disposed;
 
 		private const string TEMP_DIRECTORY = "temp";
 
@@ -41,7 +40,6 @@ namespace Altium.Generator
 
 		public void Configure(string path)
 		{
-			this.path = path;
 			this.fullPath = Path.GetFullPath(path);
 			bytesWritten = 0;
 			writer = new StreamWriter(path, false);
@@ -116,8 +114,12 @@ namespace Altium.Generator
 			return File.ReadLines(inputPath);
 		}
 
-		public void Dispose()
+		public void DisposeInternal()
 		{
+			if (_disposed)
+				return;
+
+
 			writer.Dispose();
 			foreach (var key in chunks.Keys)
 			{
@@ -133,6 +135,19 @@ namespace Altium.Generator
 					file.Delete();
 				}
 			}
+
+			_disposed = true;
+		}
+
+		public void Dispose()
+		{
+			DisposeInternal();
+			GC.SuppressFinalize(this);
+		}
+
+		~FileHandler()
+		{
+			DisposeInternal();
 		}
 	}
 }

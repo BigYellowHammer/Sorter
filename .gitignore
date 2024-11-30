@@ -21,4 +21,5 @@ bld/
 .vscode/*
 .vs/
 coverage-report/
+coveragereport/
 TestResults/

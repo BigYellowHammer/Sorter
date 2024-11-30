@@ -4,13 +4,13 @@ namespace Altium.Generator.CommandOptions
 {
 	internal class RandomnessGenerator : IRandomnessGenerator
 	{
-		private List<string> avaliableWords;
-		private Random random = new Random();
-		const string chars = "abcdefghijklmnopqrstuvwxyz";
+		private List<string> _avaliableWords = new List<string>();
+		private readonly Random _random = new();
+		private const string _chars = "abcdefghijklmnopqrstuvwxyz";
 
 		public void Configure(List<string> words)
 		{
-			avaliableWords = words;
+			_avaliableWords = words;
 		}
 
 		public string GenerateRow()
@@ -20,7 +20,7 @@ namespace Altium.Generator.CommandOptions
 
 		public int GenerateRandomInteger()
 		{
-			return random.Next(0, int.MaxValue);
+			return _random.Next(0, int.MaxValue);
 		}
 
 		public string GenerateRandomString()
@@ -31,26 +31,26 @@ namespace Altium.Generator.CommandOptions
 
 		private int NumberOfWords()
 		{
-			return random.Next(1, 12);
+			return _random.Next(1, 12);
 		}
 
 		private string GenerateWord()
 		{
-			if (avaliableWords.Count == 0)
+			if (_avaliableWords.Count == 0)
 			{
-				var length = random.Next(3, 15); //arbitrary
+				var length = _random.Next(3, 15); //arbitrary
 				char[] stringChars = new char[length];
 
 				for (int i = 0; i < length; i++)
 				{
-					stringChars[i] = chars[random.Next(chars.Length)];
+					stringChars[i] = _chars[_random.Next(_chars.Length)];
 				}
 
 				return new string(stringChars);
 			}
 			else
 			{
-				return avaliableWords[random.Next(avaliableWords.Count)];
+				return _avaliableWords[_random.Next(_avaliableWords.Count)];
 			}
 		}
 
